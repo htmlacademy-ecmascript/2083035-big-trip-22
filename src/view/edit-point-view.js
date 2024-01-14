@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { EVENT_TYPES } from '../const.js';
 import { formatDateFull } from '../utils.js';
 
@@ -6,8 +6,8 @@ const createEditPoint = (point, destinations, offers) => {
   const pointDestination = destinations.find((dest) => dest.id === point.destination);
   const typeOffers = offers.find((off) => off.type === point.type).offers;
   const pointOffers = typeOffers.filter((typeOffer) => point.offers.includes(typeOffer.id));
-  const { basePrice, dateFrom, dateTo, type } = point;
-  const { name, description, pictures } = pointDestination || {};
+  const {basePrice, dateFrom, dateTo, type} = point;
+  const {name, description, pictures} = pointDestination || {};
   const pointId = point.id || 0;
   return `
               <form class="event event--edit" action="#" method="post">
@@ -41,7 +41,7 @@ const createEditPoint = (point, destinations, offers) => {
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${name || ''}" list="destination-list-${pointId}">
                     <datalist id="destination-list-${pointId}">
-                    ${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
+                    ${destinations.map((destination)=>`<option value="${destination.name}"></option>`).join('')}
                     </datalist>
                   </div>
 
@@ -80,7 +80,7 @@ const createEditPoint = (point, destinations, offers) => {
                     <div class="event__available-offers">
                     ${typeOffers.map((typeOffer) => (
     `<div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${typeOffer.title}-${pointId}" type="checkbox" name="event-offer-${typeOffer.title}" ${pointOffers.map((offer) => offer.id).includes(typeOffer.id) ? 'checked' : ''}>
+                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${typeOffer.title}-${pointId}" type="checkbox" name="event-offer-${typeOffer.title}" ${pointOffers.map((offer)=>offer.id).includes(typeOffer.id) ? 'checked' : ''}>
                         <label class="event__offer-label" for="event-offer-${typeOffer.title}-${pointId}">
                           <span class="event__offer-title">${typeOffer.title}</span>
                           &plus;&euro;&nbsp;
@@ -90,7 +90,7 @@ const createEditPoint = (point, destinations, offers) => {
   )).join('')}
                     </div>
                   </section>`
-    : ''}
+    : '' }
 
                 ${pointDestination ? (
     ` <section class="event__section  event__section--destination">
@@ -99,7 +99,7 @@ const createEditPoint = (point, destinations, offers) => {
                   ${pictures.length > 0 ? (
       `<div class="event__photos-container">
                       <div class="event__photos-tape">
-                      ${pictures.map((pic) => `<img class="event__photo" src="${pic.src}" alt="${pic.description}">`)}
+                      ${pictures.map((pic)=>`<img class="event__photo" src="${pic.src}" alt="${pic.description}">`)}
 
                       </div>
                     </div>`
@@ -111,26 +111,29 @@ const createEditPoint = (point, destinations, offers) => {
            `;
 };
 
-export default class EditPointView {
-  constructor(point, destinations, offers) {
-    this.point = point;
-    this.destinations = destinations;
-    this.offers = offers;
+export default class EditPointView extends AbstractView{
+  #point = null;
+  #destinations = null;
+  #offers = null;
+
+  #handleEditClick = null;
+
+  constructor({point, destinations, offers, onFormClick}) {
+    super();
+    this.#point = point;
+    this.#destinations = destinations;
+    this.#offers = offers;
+
+    this.#handleEditClick = onFormClick;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formClickHandler);
   }
 
-  getTemplate() {
-    return createEditPoint(this.point, this.destinations, this.offers);
+  get template() {
+    return createEditPoint(this.#point, this.#destinations, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #formClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }
