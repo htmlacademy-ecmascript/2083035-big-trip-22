@@ -5,7 +5,7 @@ export const destinations = [
     description: ' Amsterdam is a beautiful city',
     pictures: [
       {
-        src: 'http://picsum.photos/300/200?r=0.0762563005163317',
+        src: 'https://cdn.britannica.com/30/180130-138-4FC01CDD/Overview-Amsterdam.jpg?w=800&h=450&c=crop',
         description: 'Amsterdam parliament building'
       }
     ],
@@ -16,7 +16,7 @@ export const destinations = [
     description: ' Chamonix is a beautiful city',
     pictures: [
       {
-        src: 'http://picsum.photos/300/200?r=0.0762563005163317',
+        src: 'https://vcdn.bergfex.at/images/resized/a2/69c17597c20ed4a2_46022da1d844d952@2x.jpg',
         description: 'Chamonix parliament building'
       }
     ],
