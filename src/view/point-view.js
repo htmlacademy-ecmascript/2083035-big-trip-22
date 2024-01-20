@@ -1,8 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { formatDate, formatTime, differenceTime } from '../utils.js';
+import { formatDate, formatTime, differenceTime } from '../utils/utils.js';
 
 const createPointTemplate = (point, destinations, offers) => {
-  const {basePrice, isFavorite, dateFrom, dateTo, type} = point;
+  const { basePrice, isFavorite, dateFrom, dateTo, type } = point;
   const typeOffers = offers.find((off) => off.type === point.type).offers;
   const pointOffers = typeOffers.filter((typeOffer) => point.offers.includes(typeOffer.id));
   const pointDestination = destinations.find((dest) => dest.id === point.destination);
@@ -21,7 +21,7 @@ const createPointTemplate = (point, destinations, offers) => {
           &mdash;
           <time class="event__end-time" datetime=${formatTime(dateTo)}>${formatTime(dateTo)}</time>
         </p>
-        <p class="event__duration">${differenceTime(dateTo,dateFrom)}</p>
+        <p class="event__duration">${differenceTime(dateTo, dateFrom)}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
@@ -51,14 +51,14 @@ const createPointTemplate = (point, destinations, offers) => {
 `;
 };
 
-export default class PointView extends AbstractView{
+export default class PointView extends AbstractView {
   #point = null;
   #destinations = null;
   #offers = null;
 
   #handleEditClick = null;
 
-  constructor({point, destinations, offers, onEditClick}) {
+  constructor({ point, destinations, offers, onEditClick }) {
     super();
     this.#point = point;
     this.#destinations = destinations;
