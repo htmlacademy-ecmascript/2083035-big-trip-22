@@ -1,6 +1,6 @@
-import { destinations } from '../mock/destinations.js';
-import { offers } from '../mock/offers.js';
-import { points } from '../mock/points.js';
+import {destinations} from '../mock/destinations.js';
+import {offers} from '../mock/offers.js';
+import {points} from '../mock/points.js';
 
 export default class PointModel {
   #points = null;

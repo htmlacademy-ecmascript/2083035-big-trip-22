@@ -1,31 +1,26 @@
 import InfoView from '../view/info-view.js';
-import FiltersView from '../view/filters-view.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
-import AddNewPointView from '../view/add-new-point-view.js';
-import createNoPointView from '../view/no-point-view.js';
-import { render, RenderPosition, replace } from '../framework/render.js';
+import NoPointView from '../view/no-point-view.js';
+import { RenderPosition, render, replace } from '../framework/render.js';
 
 export default class TripPresenter {
-  #mainContainer = null;
-  #filterContainer = null;
-  #listContainer = null;
   #sortContainer = null;
+  #listContainer = null;
+  #infoContainer = null;
   #pointModel = null;
 
-  #addListComponent = new EventsListView();
-  #sortComponent = new SortView();
-  #filterComponent = new FiltersView();
-  #infoComponent = new InfoView();
-  #addNewPointComponent = new AddNewPointView();
+  #listComponent = new EventsListView();
 
-  constructor({ mainContainer, filterContainer, listContainer, sortContainer, pointModel }) {
-    this.#mainContainer = mainContainer;
-    this.#filterContainer = filterContainer;
-    this.#listContainer = listContainer;
+  #sortComponent = new SortView();
+  #infoComponent = new InfoView();
+
+  constructor({sortContainer, listContainer, infoContainer, pointModel}) {
     this.#sortContainer = sortContainer;
+    this.#listContainer = listContainer;
+    this.#infoContainer = infoContainer;
     this.#pointModel = pointModel;
   }
 
@@ -33,7 +28,7 @@ export default class TripPresenter {
     this.#renderApp();
   }
 
-  #renderTripPoint(point, destinations, offers) {
+  #renderTrip(point, destinations, offers) {
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
@@ -70,7 +65,8 @@ export default class TripPresenter {
       replace(pointComponent, pointEditComponent);
     }
 
-    render(pointComponent, this.#addListComponent.element);
+    render(pointComponent, this.#listComponent.element);
+
   }
 
   #renderApp() {
@@ -78,21 +74,18 @@ export default class TripPresenter {
     const destinations = this.#pointModel.destinations;
     const points = this.#pointModel.points;
 
-    render(this.#infoComponent, this.#mainContainer, RenderPosition.AFTERBEGIN);
+    render(this.#infoComponent, this.#infoContainer, RenderPosition.AFTERBEGIN);
     render(this.#sortComponent, this.#sortContainer);
-    render(this.#filterComponent, this.#filterContainer);
-    render(this.#addListComponent, this.#listContainer);
-    // render(this.#addNewPointComponent, this.#listContainer, RenderPosition.AFTEREND);
+    render(this.#listComponent, this.#listContainer);
+
 
     if (points.length === 0) {
-      render(new createNoPointView(), this.#sortContainer);
+      render(new NoPointView(), this.#sortContainer);
       return;
     }
 
     for (const point of points) {
-      this.#renderTripPoint(point, destinations, offers);
+      this.#renderTrip(point, destinations, offers);
     }
-
   }
 }
-

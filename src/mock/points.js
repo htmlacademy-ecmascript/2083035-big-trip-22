@@ -37,4 +37,3 @@ export const points = [
     type: 'bus'
   }
 ];
-
