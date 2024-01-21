@@ -1,10 +1,10 @@
 import InfoView from '../view/info-view.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
-import PointView from '../view/point-view.js';
-import EditPointView from '../view/edit-point-view.js';
 import NoPointView from '../view/no-point-view.js';
-import { RenderPosition, render, replace } from '../framework/render.js';
+import { RenderPosition, render } from '../framework/render.js';
+import PointPresenter from './point-presenter.js';
+import {updateItem} from '../utils/common.js';
 
 export default class TripPresenter {
   #sortContainer = null;
@@ -12,12 +12,15 @@ export default class TripPresenter {
   #infoContainer = null;
   #pointModel = null;
 
-  #listComponent = new EventsListView();
+  #eventsListlistComponent = new EventsListView();
 
   #sortComponent = new SortView();
   #infoComponent = new InfoView();
+  #noPointComponent = new NoPointView();
 
-  constructor({sortContainer, listContainer, infoContainer, pointModel}) {
+  #pointPresenters = new Map();
+
+  constructor({ sortContainer, listContainer, infoContainer, pointModel }) {
     this.#sortContainer = sortContainer;
     this.#listContainer = listContainer;
     this.#infoContainer = infoContainer;
@@ -28,45 +31,40 @@ export default class TripPresenter {
     this.#renderApp();
   }
 
-  #renderTrip(point, destinations, offers) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const pointComponent = new PointView({
-      point,
-      destinations,
-      offers,
-      onEditClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+  #renderPoint(point, destinations, offers) {
+    const pointPresenter = new PointPresenter({
+      eventsListlistComponent: this.#eventsListlistComponent.element,
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange
     });
 
-    const pointEditComponent = new EditPointView({
-      point,
-      destinations,
-      offers,
-      onFormClick: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
+    pointPresenter.init(point, destinations, offers);
+    this.#pointPresenters.set(point.id, pointPresenter);
+  }
 
-    function replaceCardToForm() {
-      replace(pointEditComponent, pointComponent);
-    }
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
 
-    function replaceFormToCard() {
-      replace(pointComponent, pointEditComponent);
-    }
+  #handlePointChange = (updatedPoint) => {
+    this.#eventsListlistComponent = updateItem(this.#eventsListlistComponent, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
 
-    render(pointComponent, this.#listComponent.element);
+  #renderSort() {
+    render(this.#sortComponent, this.#sortContainer);
+  }
 
+  #renderInfo() {
+    render(this.#infoComponent, this.#infoContainer, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderListComponent() {
+    render(this.#eventsListlistComponent, this.#listContainer);
+  }
+
+  #renderNoPoint() {
+    render(this.#noPointComponent, this.#sortContainer);
   }
 
   #renderApp() {
@@ -74,18 +72,18 @@ export default class TripPresenter {
     const destinations = this.#pointModel.destinations;
     const points = this.#pointModel.points;
 
-    render(this.#infoComponent, this.#infoContainer, RenderPosition.AFTERBEGIN);
-    render(this.#sortComponent, this.#sortContainer);
-    render(this.#listComponent, this.#listContainer);
-
+    this.#renderInfo();
+    this.#renderSort();
+    this.#renderListComponent();
 
     if (points.length === 0) {
-      render(new NoPointView(), this.#sortContainer);
+      this.#renderNoPoint();
       return;
     }
 
     for (const point of points) {
-      this.#renderTrip(point, destinations, offers);
+      this.#renderPoint(point, destinations, offers);
     }
   }
 }
+

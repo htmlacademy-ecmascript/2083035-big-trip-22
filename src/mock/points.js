@@ -1,6 +1,10 @@
+import { nanoid } from 'nanoid';
+import { getRandomArrayElement } from '../utils/common.js';
+import { POINTS_COUNT } from '../const.js';
+
 export const points = [
   {
-    id: 'f4b62099-293f-4c3d-a702-94eec4a2808c',
+    id: nanoid(),
     basePrice: 1000,
     dateFrom: '2019-07-11T11:15:56.845Z',
     dateTo: '2019-07-11T11:22:13.375Z',
@@ -14,7 +18,7 @@ export const points = [
     type: 'taxi'
   },
   {
-    id: 'f4b62099-293f-4c3d-a702-94eec4a2809c',
+    id: nanoid(),
     basePrice: 3000,
     dateFrom: '2019-02-10T02:55:56.845Z',
     dateTo: '2019-02-10T04:22:13.375Z',
@@ -27,7 +31,7 @@ export const points = [
     type: 'flight'
   },
   {
-    id: 'f4b62099-293f-4c3d-a702-94eec4a2810c',
+    id: nanoid(),
     basePrice: 500,
     dateFrom: '2019-05-10T12:55:56.845Z',
     dateTo: '2019-06-11T01:22:13.375Z',
@@ -37,3 +41,19 @@ export const points = [
     type: 'bus'
   }
 ];
+
+function getRandomTrip() {
+  const pointsRandom = Array.from({ length: 0 });
+
+  while (pointsRandom.length < POINTS_COUNT) {
+    const item = getRandomArrayElement(points);
+
+    if (!pointsRandom.includes(item)) {
+      pointsRandom.push(item);
+    }
+  }
+
+  return pointsRandom;
+}
+
+export { getRandomTrip };
