@@ -5,7 +5,7 @@ import { POINTS_COUNT } from '../const.js';
 export const points = [
   {
     id: nanoid(),
-    basePrice: 1000,
+    basePrice: 200,
     dateFrom: '2019-07-11T11:15:56.845Z',
     dateTo: '2019-07-11T11:22:13.375Z',
     destination: '1',
@@ -33,8 +33,8 @@ export const points = [
   {
     id: nanoid(),
     basePrice: 500,
-    dateFrom: '2019-05-10T12:55:56.845Z',
-    dateTo: '2019-06-11T01:22:13.375Z',
+    dateFrom: '2019-05-10T12:30:56.845Z',
+    dateTo: '2019-05-10T14:30:13.375Z',
     destination: '3',
     isFavorite: false,
     offers: [],

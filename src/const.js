@@ -9,5 +9,12 @@ const FilterType = {
   PAST: 'past'
 };
 
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers',
+};
 
-export { CITY, EVENT_TYPES, FilterType, POINTS_COUNT };
+export { CITY, EVENT_TYPES, FilterType, POINTS_COUNT, SortType };
