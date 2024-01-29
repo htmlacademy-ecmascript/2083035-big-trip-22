@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EVENT_TYPES } from '../const.js';
 import { formatDateFull } from '../utils/utils.js';
 
@@ -6,8 +6,8 @@ const createEditPoint = (point, destinations, offers) => {
   const pointDestination = destinations.find((dest) => dest.id === point.destination);
   const typeOffers = offers.find((off) => off.type === point.type).offers;
   const pointOffers = typeOffers.filter((typeOffer) => point.offers.includes(typeOffer.id));
-  const {basePrice, dateFrom, dateTo, type} = point;
-  const {name, description, pictures} = pointDestination || {};
+  const { basePrice, dateFrom, dateTo, type } = point;
+  const { name, description, pictures } = pointDestination || {};
   const pointId = point.id || 0;
   return `
               <form class="event event--edit" action="#" method="post">
@@ -41,7 +41,7 @@ const createEditPoint = (point, destinations, offers) => {
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${name || ''}" list="destination-list-${pointId}">
                     <datalist id="destination-list-${pointId}">
-                    ${destinations.map((destination)=>`<option value="${destination.name}"></option>`).join('')}
+                    ${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
                     </datalist>
                   </div>
 
@@ -80,7 +80,7 @@ const createEditPoint = (point, destinations, offers) => {
                     <div class="event__available-offers">
                     ${typeOffers.map((typeOffer) => (
     `<div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${typeOffer.title}-${pointId}" type="checkbox" name="event-offer-${typeOffer.title}" ${pointOffers.map((offer)=>offer.id).includes(typeOffer.id) ? 'checked' : ''}>
+                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${typeOffer.title}-${pointId}" type="checkbox" name="event-offer-${typeOffer.title}" ${pointOffers.map((offer) => offer.id).includes(typeOffer.id) ? 'checked' : ''}>
                         <label class="event__offer-label" for="event-offer-${typeOffer.title}-${pointId}">
                           <span class="event__offer-title">${typeOffer.title}</span>
                           &plus;&euro;&nbsp;
@@ -90,7 +90,7 @@ const createEditPoint = (point, destinations, offers) => {
   )).join('')}
                     </div>
                   </section>`
-    : '' }
+    : ''}
 
                 ${pointDestination ? (
     ` <section class="event__section  event__section--destination">
@@ -99,7 +99,7 @@ const createEditPoint = (point, destinations, offers) => {
                   ${pictures.length > 0 ? (
       `<div class="event__photos-container">
                       <div class="event__photos-tape">
-                      ${pictures.map((pic)=>`<img class="event__photo" src="${pic.src}" alt="${pic.description}">`)}
+                      ${pictures.map((pic) => `<img class="event__photo" src="${pic.src}" alt="${pic.description}">`)}
 
                       </div>
                     </div>`
@@ -111,29 +111,70 @@ const createEditPoint = (point, destinations, offers) => {
            `;
 };
 
-export default class EditPointView extends AbstractView{
-  #point = null;
+export default class EditPointView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
 
   #handleEditClick = null;
+  #handleChangeType = null;
 
-  constructor({point, destinations, offers, onFormClick}) {
+  constructor({ point, destinations, offers, onFormClick, onFormChangeType }) {
     super();
-    this.#point = point;
+
+    this._setState(EditPointView.parsePointToState(point));
     this.#destinations = destinations;
     this.#offers = offers;
 
+
     this.#handleEditClick = onFormClick;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formClickHandler);
+
+    this.#handleChangeType = onFormChangeType;
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#formTypeChangeHandler);
+
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEditPoint(this.#point, this.#destinations, this.#offers);
+    return createEditPoint(this._state, this.#destinations, this.#offers);
+  }
+
+  _restoreHandlers() {
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formClickHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#formTypeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
   }
 
   #formClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleEditClick();
+    this.#handleEditClick(EditPointView.parsePointToState(this._state));
   };
+
+  #formTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      type: evt.target.value
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    this.updateElement({
+      destination: this.#destinations.find((destination) => destination.name === evt.target.value).id,
+    });
+  };
+
+  static parsePointToState(point) {
+    const state = { ...point };
+
+    return state;
+  }
+
+  static parseStateToPoint(state) {
+    const point = { ...state };
+
+    point.offers = Array.from(point.offers);
+
+    return point;
+  }
 }
