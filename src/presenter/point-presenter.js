@@ -47,7 +47,8 @@ export default class PointPresenter {
         document.addEventListener('keydown', escKeyDownHandler);
       },
       onFavoriteClick: () => {
-        this.#handleFavoriteClick();
+        // eslint-disable-next-line no-unused-expressions
+        this.#handleFavoriteClick;
       },
     });
 
@@ -102,6 +103,5 @@ export default class PointPresenter {
 
   #onFavoriteClick = () => {
     this.#handleDataChange({ ...this.point, isFavorite: !this.point.isFavorite });
-
   };
 }
