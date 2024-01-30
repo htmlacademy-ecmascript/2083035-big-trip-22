@@ -59,7 +59,7 @@ export default class PointPresenter {
       onFormClick: () => {
         this.#replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
-      }
+      },
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {

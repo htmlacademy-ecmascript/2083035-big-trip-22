@@ -38,4 +38,28 @@ export const offers = [
     type: 'bus',
     offers: []
   },
+  {
+    type: 'train',
+    offers: []
+  },
+  {
+    type: 'ship',
+    offers: []
+  },
+  {
+    type: 'drive',
+    offers: []
+  },
+  {
+    type: 'check-in',
+    offers: []
+  },
+  {
+    type: 'sightseeing',
+    offers: []
+  },
+  {
+    type: 'restaurant',
+    offers: []
+  },
 ];
